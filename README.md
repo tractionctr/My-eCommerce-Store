@@ -20,7 +20,7 @@ A Django-based eCommerce web application featuring a vendor/buyer system, produc
 ### 1. Clone the repository
 
 ```
-git clone <your-repo-link>
+git clone (https://github.com/tractionctr/My-eCommerce-Store)
 cd ecommerce
 ```
 
