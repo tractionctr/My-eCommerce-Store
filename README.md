@@ -27,7 +27,6 @@ cd ecommerce
 ```bash
 git clone https://github.com/tractionctr/My-eCommerce-Store.git
 cd My-eCommerce-Store
->>>>>>> 601a2d9 (Updated README and final cleanup)
 ```
 
 ---
