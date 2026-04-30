@@ -1,0 +1,22 @@
+{% extends "store/base.html" %}
+{% block content %}
+
+<h2>{% if store %}Edit{% else %}Create{% endif %} Store</h2>
+
+<div class="card">
+
+    <form method="post" class="form">
+        {% csrf_token %}
+
+        <input type="text" name="name" placeholder="Store name" value="{{ store.name|default:'' }}">
+
+        {% if error %}
+            <p class="error-text">{{ error }}</p>
+        {% endif %}
+
+        <button class="button" type="submit">Save</button>
+    </form>
+
+</div>
+
+{% endblock %}

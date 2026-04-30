@@ -1,0 +1,11 @@
+{% extends 'store/base.html' %}
+{% block content %}
+
+<h2>Order Successful</h2>
+
+<p>Your order was placed.</p>
+<p>Order ID: {{ order.id }}</p>
+
+<a class="button" href="{% url 'view_products' %}">Back to Products</a>
+
+{% endblock %}

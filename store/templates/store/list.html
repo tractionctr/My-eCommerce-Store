@@ -1,0 +1,45 @@
+{% extends "store/base.html" %}
+{% block content %}
+
+<h2>Products</h2>
+
+{% for product in products %}
+    <div class="card">
+        <p>{{ product.name }} - ${{ product.price }}</p>
+
+        <div class="button-group">
+            <a class="button" href="{% url 'add_to_cart' product.id %}">Add to Cart</a>
+        </div>
+
+        <form class="review-form" method="post" action="{% url 'add_review' product.id %}">
+            {% csrf_token %}
+            <textarea class="review-input" name="content" rows="3" placeholder="Write review"></textarea>
+            <button class="button" type="submit">Submit</button>
+        </form>
+
+        <h4>Reviews:</h4>
+
+        {% for review in reviews %}
+            {% if review.product.id == product.id %}
+
+<div class="review">
+    <span class="review-user">{{ review.user.username }}:</span>
+    <span class="review-text">{{ review.content }}</span>
+    {% if review.verified %}
+        <span class="badge verified">Verified</span>
+    {% else %}
+        <span class="badge unverified">Unverified</span>
+    {% endif %}
+</div>
+
+            {% endif %}
+        {% empty %}
+            <p>No reviews yet.</p>
+        {% endfor %}
+
+    </div>
+{% empty %}
+    <p>No products available.</p>
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "store/base.html" %}
+{% block content %}
+
+<h2>{{ store.name }}</h2>
+
+{% if is_owner %}
+    <a class="button" href="{% url 'add_product' %}">Add Product</a>
+{% endif %}
+
+<h3>Products</h3>
+
+{% for product in products %}
+    <div class="card">
+        {{ product.name }} - {{ product.price }}
+    </div>
+{% empty %}
+    <p>No products yet.</p>
+{% endfor %}
+
+<br>
+<a class="button" href="{% url 'buyer_dashboard' %}">Back</a>
+
+{% endblock %}

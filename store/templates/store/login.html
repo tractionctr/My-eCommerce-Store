@@ -1,0 +1,21 @@
+{% extends "store/base.html" %}
+{% block content %}
+
+<h2>Login</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <input type="text" name="username" placeholder="Username">
+    <input type="password" name="password" placeholder="Password">
+    <br>
+    <button class="button" type="submit">Login</button>
+</form>
+
+<br>
+<a class="button" href="{% url 'password_reset' %}">Forgot Password</a>
+
+{% if message %}
+    <p style="color:red">{{ message }}</p>
+{% endif %}
+
+{% endblock %}

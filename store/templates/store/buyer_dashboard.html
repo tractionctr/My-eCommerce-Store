@@ -1,0 +1,20 @@
+{% extends "store/base.html" %}
+
+{% block content %}
+
+<h2>Stores</h2>
+
+{% for store in stores %}
+    <div class="card">
+        <p><strong>{{ store.name }}</strong></p>
+        <a class="button" href="{% url 'store_detail' store.id %}">Browse</a>
+    </div>
+{% empty %}
+    <p>No stores available.</p>
+{% endfor %}
+
+<br><br>
+
+<a class="button" href="{% url 'view_products' %}">Back</a>
+
+{% endblock %}

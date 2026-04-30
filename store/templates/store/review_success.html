@@ -1,0 +1,16 @@
+{% extends 'store/base.html' %}
+{% block content %}
+
+<h2>Review Submitted</h2>
+
+<p class="review-text">{{ content|linebreaksbr }}</p>
+
+{% if verified %}
+    <span class="badge verified">Verified</span>
+{% else %}
+    <span class="badge unverified">Unverified</span>
+{% endif %}
+
+<a class="button" href="{% url 'view_products' %}">Back</a>
+
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "store/base.html" %}
+{% block content %}
+
+<h2>{% if product %}Edit{% else %}Add{% endif %} Product</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <input type="text" name="name" placeholder="Product Name" required value="{{ product.name|default:'' }}">
+    <input type="text" name="price" placeholder="Price" required value="{{ product.price|default:'' }}">
+
+    <select name="store">
+        {% for store in stores %}
+            <option value="{{ store.id }}" {% if product and product.store.id == store.id %}selected{% endif %}>{{ store.name }}</option>
+        {% endfor %}
+    </select>
+
+    <br>
+    <button class="button" type="submit">{% if product %}Update{% else %}Add{% endif %} Product</button>
+</form>
+
+{% if error %}
+<p>{{ error }}</p>
+{% endif %}
+
+{% endblock %}
