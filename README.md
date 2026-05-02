@@ -23,13 +23,11 @@ A Django-based eCommerce web application featuring a vendor/buyer system, produc
 ```
 git clone https://github.com/tractionctr/My-eCommerce-Store
 cd ecommerce
-<<<<<<< HEAD
 =======
 ```bash
 git clone https://github.com/tractionctr/My-eCommerce-Store.git
 cd My-eCommerce-Store
 =======
->>>>>>> 823a32a (UI polish + flake8 fixes + Reddit feed update)
 ```
 
 ---
