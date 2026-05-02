@@ -124,6 +124,7 @@ This project uses **MariaDB** as the database backend.
 - `/vendor/` → Vendor dashboard
 - `/buyer/` → Buyer dashboard
 - `/admin/` → Django admin panel
+- `/reddit/` → Reddit feed
 
 ---
 
