@@ -1,3 +1,5 @@
+"""Views for the eCommerce store application."""
+
 from functools import wraps
 from decimal import Decimal
 
@@ -17,10 +19,10 @@ from .models import Product, Order, Store, Review
 from .serializers import ProductSerializer, StoreSerializer, ReviewSerializer
 from .functions.reddit import fetch_reddit_posts
 
-
 # =========================
 # PERMISSIONS
 # =========================
+
 
 def vendor_required(view_func):
     @wraps(view_func)
@@ -171,6 +173,7 @@ def view_cart(request):
 
 @login_required
 def checkout(request):
+    """Process cart checkout and send invoice email."""
     cart = request.session.get('cart', [])
     products = Product.objects.filter(id__in=cart)
 
@@ -200,7 +203,11 @@ def checkout(request):
                 <th style="padding: 10px; text-align: left;">Product</th>
                 <th style="padding: 10px;">Price</th>
             </tr>
-            {''.join([f"<tr><td style='padding: 8px; border-bottom: 1px solid #374151;'>{p.name}</td><td style='padding: 8px; border-bottom: 1px solid #374151;'>${p.price}</td></tr>" for p in products])}
+            {''.join([f"""<tr><td style='padding:
+                    8px; border-bottom: 1px solid
+                    #374151;'>{p.name}</td><td style='padding: 8px;
+                    border-bottom: 1px solid #374151;'>${p.price}</td>
+                    </tr>""" for p in products])}
             <tr style="font-weight: bold;">
                 <td style="padding: 10px;">Total</td>
                 <td style="padding: 10px;">${total:.2f}</td>
@@ -212,7 +219,9 @@ def checkout(request):
 
     send_mail(
         'Your Order Invoice',
-        f'Thanks for your order!\n\nOrder ID: {order.id}\n\n' + "\n".join([f"- {p.name}: ${p.price}" for p in products]) + f'\n\nTotal: ${total:.2f}',
+        f'Thanks for your order!\n\nOrder ID: {order.id}\n\n' +
+        "\n".join([f"""- {p.name}: ${p.price}""" for p in products]) +
+        f'\n\nTotal: ${total:.2f}',
         'from@example.com',
         [request.user.email],
         html_message=invoice_html,
@@ -354,7 +363,6 @@ def buyer_dashboard(request):
 # =========================
 
 
-
 @vendor_required
 def create_store(request):
     existing = Store.objects.filter(owner=request.user).first()
@@ -431,7 +439,8 @@ def delete_store(request, store_id):
 
 @vendor_required
 def edit_product(request, product_id):
-    product = get_object_or_404(Product, id=product_id, store__owner=request.user)
+    product = get_object_or_404(Product, id=product_id,
+                                store__owner=request.user)
     stores = Store.objects.filter(owner=request.user)
 
     if request.method == "POST":
@@ -440,7 +449,7 @@ def edit_product(request, product_id):
 
         try:
             price = Decimal(price_raw)
-        except:
+        except (ValueError, TypeError):
             return render(request, "store/product_form.html", {
                 "error": "Price must be a number",
                 "product": product,
@@ -460,12 +469,14 @@ def edit_product(request, product_id):
         messages.success(request, "Product updated successfully")
         return redirect('store_detail', store_id=product.store.id)
 
-    return render(request, "store/product_form.html", {"product": product, "stores": stores})
+    return render(request, "store/product_form.html",
+                  {"product": product, "stores": stores})
 
 
 @vendor_required
 def delete_product(request, product_id):
-    product = get_object_or_404(Product, id=product_id, store__owner=request.user)
+    product = get_object_or_404(Product, id=product_id,
+                                store__owner=request.user)
     store_id = product.store.id
     product.delete()
     messages.success(request, "Product deleted successfully")
@@ -488,7 +499,7 @@ def add_product(request):
         # safety parse
         try:
             price = Decimal(price_raw)
-        except:
+        except (ValueError, TypeError):
             return render(request, "store/product_form.html", {
                 "error": "Price must be a number",
                 "stores": Store.objects.filter(owner=request.user),

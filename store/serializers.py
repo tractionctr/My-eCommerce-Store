@@ -1,3 +1,5 @@
+"""REST API serializers for store models."""
+
 from rest_framework import serializers
 from .models import Product, Store, Review
 

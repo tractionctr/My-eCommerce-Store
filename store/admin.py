@@ -1,3 +1,5 @@
+"""Admin configuration for store models."""
+
 from django.contrib import admin
 from .models import User, Store, Product, Order, Review
 

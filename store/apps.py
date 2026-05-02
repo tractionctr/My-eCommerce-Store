@@ -1,3 +1,5 @@
+"""Application configuration for store app."""
+
 from django.apps import AppConfig
 
 

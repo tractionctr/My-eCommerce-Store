@@ -1,3 +1,5 @@
+"""Forms used in the store application."""
+
 from django import forms
 from .models import Product
 from django.contrib.auth import get_user_model

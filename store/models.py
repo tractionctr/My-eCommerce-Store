@@ -1,3 +1,5 @@
+"""Database models for the store application."""
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator
@@ -7,7 +9,7 @@ from decimal import Decimal
 def clean_price(value):
     try:
         return Decimal(str(value))
-    except:
+    except (ValueError, TypeError, ArithmeticError):
         return Decimal("0.00")
 
 
@@ -24,6 +26,7 @@ class Store(models.Model):
 
 
 class Product(models.Model):
+    """Represents a product sold in a store."""
     def __str__(self):
         return self.name
 

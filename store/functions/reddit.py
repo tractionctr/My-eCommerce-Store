@@ -1,7 +1,10 @@
+"""Functions for fetching Reddit posts."""
+
 import requests
 
 
 def fetch_reddit_posts(subreddit):
+    """Fetch posts from a subreddit."""
     url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit=10"
 
     headers = {
