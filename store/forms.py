@@ -8,11 +8,13 @@ from decimal import Decimal
 
 
 class ProductForm(forms.ModelForm):
+    """Form for creating and editing products."""
     class Meta:
         model = Product
         fields = "__all__"
 
     def clean_price(self):
+        """Validate product price limit."""
         price = self.cleaned_data["price"]
         if price >= Decimal("1000000"):
             raise forms.ValidationError("Max price is 999,999")
@@ -23,6 +25,7 @@ User = get_user_model()
 
 
 class CustomUserCreationForm(UserCreationForm):
+    """Registration form with buyer/vendor role selection."""
     ROLE_CHOICES = [
         ('buyer', 'Buyer'),
         ('vendor', 'Vendor'),
@@ -40,6 +43,7 @@ class CustomUserCreationForm(UserCreationForm):
         fields = ['username', 'email', 'password1', 'password2', 'role']
 
     def save(self, commit=True):
+        """Save user with selected role."""
         user = super().save(commit=False)
 
         user.email = self.cleaned_data['email']

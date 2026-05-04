@@ -14,6 +14,13 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 
+from rest_framework.decorators import (
+    api_view,
+    authentication_classes,
+    permission_classes,
+)
+from rest_framework.authentication import BasicAuthentication
+
 from .forms import CustomUserCreationForm
 from .models import Product, Order, Store, Review
 from .serializers import ProductSerializer, StoreSerializer, ReviewSerializer
@@ -25,6 +32,7 @@ from .functions.reddit import fetch_reddit_posts
 
 
 def vendor_required(view_func):
+    """Restrict access to vendor users only."""
     @wraps(view_func)
     def wrapper(request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -39,7 +47,11 @@ def vendor_required(view_func):
 # API VIEWSETS
 # =========================
 
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def stores_by_vendor(request, vendor_id):
+    """Return all stores owned by a specific vendor."""
     stores = Store.objects.filter(owner_id=vendor_id)
 
     data = [
@@ -54,7 +66,11 @@ def stores_by_vendor(request, vendor_id):
     return JsonResponse(data, safe=False)
 
 
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def products_by_store(request, store_id):
+    """Return all products belonging to a specific store."""
     products = Product.objects.filter(store_id=store_id)
 
     data = [
@@ -69,8 +85,11 @@ def products_by_store(request, store_id):
     return JsonResponse(data, safe=False)
 
 
-@login_required
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+@permission_classes([IsAuthenticated])
 def vendor_reviews(request):
+    """Return reviews for products owned by the logged-in vendor."""
     if not request.user.is_vendor:
         return JsonResponse({"error": "Not a vendor"}, status=403)
 
@@ -90,6 +109,7 @@ def vendor_reviews(request):
 
 
 class ProductViewSet(viewsets.ModelViewSet):
+    """API endpoint for managing products."""
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated]
@@ -109,6 +129,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 
 class StoreViewSet(viewsets.ModelViewSet):
+    """API endpoint for managing stores."""
     queryset = Store.objects.all()
     serializer_class = StoreSerializer
     permission_classes = [IsAuthenticated]
@@ -129,6 +150,7 @@ class StoreViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ReadOnlyModelViewSet):
+    """Read-only API endpoint for reviews."""
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated]
@@ -145,6 +167,7 @@ class ReviewViewSet(viewsets.ReadOnlyModelViewSet):
 # =========================
 
 def view_products(request):
+    """Display all products and reviews."""
     products = Product.objects.all()
     reviews = Review.objects.all()
     return render(request, 'store/list.html', {
@@ -158,6 +181,7 @@ def view_products(request):
 # =========================
 
 def add_to_cart(request, product_id):
+    """Add a product to the session cart."""
     cart = request.session.get('cart', [])
     cart.append(product_id)
     request.session['cart'] = cart
@@ -166,6 +190,7 @@ def add_to_cart(request, product_id):
 
 @login_required
 def view_cart(request):
+    """Display items currently in the user's cart."""
     cart = request.session.get('cart', [])
     products = Product.objects.filter(id__in=cart)
     return render(request, 'store/cart.html', {'products': products})
@@ -236,6 +261,7 @@ def checkout(request):
 
 @login_required
 def add_review(request, product_id):
+    """Create a product review."""
     if request.method == "POST":
         content = request.POST.get('content')
 
@@ -269,6 +295,7 @@ def add_review(request, product_id):
 # =========================
 
 def register(request):
+    """Register a new user account."""
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
@@ -282,6 +309,7 @@ def register(request):
 
 
 def user_login(request):
+    """Authenticate and log in a user."""
     message = ""
 
     if request.method == "POST":
@@ -304,11 +332,13 @@ def user_login(request):
 
 
 def user_logout(request):
+    """Log out the current user."""
     logout(request)
     return redirect('view_products')
 
 
 def view_store(request, store_id):
+    """Display a store and its products."""
     store = get_object_or_404(Store, id=store_id)
     products = Product.objects.filter(store=store)
 
@@ -324,6 +354,7 @@ def view_store(request, store_id):
 
 @login_required
 def vendor_dashboard(request):
+    """Display vendor dashboard."""
     if not request.user.is_vendor:
         return redirect('buyer_dashboard')
 
@@ -338,6 +369,7 @@ def vendor_dashboard(request):
 
 @vendor_required
 def store_detail(request, store_id):
+    """Display store details for owner management."""
     store = get_object_or_404(Store, id=store_id)
     products = Product.objects.filter(store=store)
 
@@ -352,6 +384,7 @@ def store_detail(request, store_id):
 
 @login_required
 def buyer_dashboard(request):
+    """Display buyer dashboard with available stores."""
     stores = Store.objects.all()
     return render(request, 'store/buyer_dashboard.html', {
         'stores': stores
@@ -365,6 +398,7 @@ def buyer_dashboard(request):
 
 @vendor_required
 def create_store(request):
+    """Create a new vendor store."""
     existing = Store.objects.filter(owner=request.user).first()
 
     if existing:
@@ -402,6 +436,7 @@ def create_store(request):
 
 @vendor_required
 def edit_store(request, store_id):
+    """Edit an existing vendor store."""
     store = get_object_or_404(Store, id=store_id, owner=request.user)
 
     if request.method == "POST":
@@ -431,6 +466,7 @@ def edit_store(request, store_id):
 
 @vendor_required
 def delete_store(request, store_id):
+    """Delete a vendor store."""
     store = get_object_or_404(Store, id=store_id, owner=request.user)
     store.delete()
     messages.success(request, "Store deleted successfully")
@@ -439,6 +475,7 @@ def delete_store(request, store_id):
 
 @vendor_required
 def edit_product(request, product_id):
+    """Edit an existing product."""
     product = get_object_or_404(Product, id=product_id,
                                 store__owner=request.user)
     stores = Store.objects.filter(owner=request.user)
@@ -475,6 +512,7 @@ def edit_product(request, product_id):
 
 @vendor_required
 def delete_product(request, product_id):
+    """Delete a product."""
     product = get_object_or_404(Product, id=product_id,
                                 store__owner=request.user)
     store_id = product.store.id
@@ -485,6 +523,7 @@ def delete_product(request, product_id):
 
 @vendor_required
 def add_product(request):
+    """Create a new product."""
     store = Store.objects.filter(owner=request.user).first()
 
     # if no store then force create store
@@ -527,6 +566,7 @@ def add_product(request):
 
 
 def reddit_feed(request):
+    """Display latest Reddit posts from the Django subreddit."""
     posts = fetch_reddit_posts("django")
 
     return render(request, "store/reddit_feed.html", {

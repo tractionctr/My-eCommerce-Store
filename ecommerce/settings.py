@@ -57,9 +57,14 @@ TEMPLATES = [
     },
 ]
 
-
 WSGI_APPLICATION = 'ecommerce.wsgi.application'
 
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework_xml.renderers.XMLRenderer',
+    ],
+}
 
 # DATABASE (MariaDB)
 DATABASES = {
@@ -72,7 +77,6 @@ DATABASES = {
         'PORT': os.getenv("DB_PORT", "3306"),
     }
 }
-
 
 AUTH_USER_MODEL = 'store.User'
 

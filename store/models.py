@@ -7,6 +7,7 @@ from decimal import Decimal
 
 
 def clean_price(value):
+    """Safely convert a value to Decimal price format."""
     try:
         return Decimal(str(value))
     except (ValueError, TypeError, ArithmeticError):
@@ -14,10 +15,12 @@ def clean_price(value):
 
 
 class User(AbstractUser):
+    """Custom user model with vendor role support."""
     is_vendor = models.BooleanField(default=False)
 
 
 class Store(models.Model):
+    """Represents a vendor store."""
     owner = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
 
@@ -41,12 +44,14 @@ class Product(models.Model):
 
 
 class Order(models.Model):
+    """Represents a customer order."""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     products = models.ManyToManyField(Product)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
 class Review(models.Model):
+    """Represents a product review."""
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     verified = models.BooleanField(default=False)
