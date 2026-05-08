@@ -4,7 +4,7 @@ A Django-based eCommerce web application featuring a vendor/buyer system, produc
 
 ---
 
-## 🚀 Features
+## Features
 
 - User authentication with Buyer and Vendor roles
 - Vendors can create stores and manage products
@@ -12,22 +12,18 @@ A Django-based eCommerce web application featuring a vendor/buyer system, produc
 - Shopping cart and checkout system
 - Email invoice sent on checkout
 - REST API for products, stores, and reviews
+- XML API support
 - MariaDB database integration
 
 ---
 
-## ⚙️ Setup Instructions
+## Setup Instructions
 
 ### 1. Clone the repository
 
-```
-git clone https://github.com/tractionctr/My-eCommerce-Store
-cd ecommerce
-=======
 ```bash
 git clone https://github.com/tractionctr/My-eCommerce-Store.git
 cd My-eCommerce-Store
-=======
 ```
 
 ---
@@ -99,7 +95,7 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Open:
+Open in browser:
 
 ```bash
 http://127.0.0.1:8000/
@@ -107,13 +103,7 @@ http://127.0.0.1:8000/
 
 ---
 
-## 🗄️ Database
-
-This project uses **MariaDB** as the database backend.
-
----
-
-## 🌐 Web Routes
+## Web Routes
 
 - `/` → View products
 - `/cart/` → Shopping cart
@@ -128,7 +118,7 @@ This project uses **MariaDB** as the database backend.
 
 ---
 
-## 🔌 API Endpoints
+## API Endpoints
 
 Base URL:
 
@@ -138,24 +128,34 @@ Base URL:
 
 ### Products
 
-- `GET /api/products/` → List all products
-- `POST /api/products/` → Create product (vendor only)
-- `GET /api/stores/<store_id>/products/` → Products by store
+- `GET /api/products/`
+- `POST /api/products/` (vendor only)
+- `GET /api/stores/<store_id>/products/`
 
 ### Stores
 
-- `GET /api/stores/` → List all stores
-- `GET /api/vendors/<vendor_id>/stores/` → Stores by vendor
+- `GET /api/stores/`
+- `GET /api/vendors/<vendor_id>/stores/`
 
 ### Reviews
 
-- `GET /api/reviews/` → List all reviews
-- `GET /api/reviews/?product=<id>` → Reviews by product
-- `GET /api/vendor/reviews/` → Vendor product reviews
+- `GET /api/reviews/`
+- `GET /api/reviews/?product=<id>`
+- `GET /api/vendor/reviews/`
+
+### XML Support
+
+Append `?format=xml` to supported endpoints.
+
+Example:
+
+```bash
+http://127.0.0.1:8000/api/vendor/reviews/?format=xml
+```
 
 ---
 
-## 🔐 Permissions
+## Permissions
 
 - Only vendors can create stores and products
 - Vendors can manage their own stores/products
@@ -164,25 +164,27 @@ Base URL:
 
 ---
 
-## 📧 Email System
+## Email System
 
-- Checkout generates and sends invoice emails
-- Development uses Django console email backend
+- Checkout generates invoice emails
+- Uses Django console email backend in development
 
 ---
 
-## 🧠 Technologies Used
+## Technologies Used
 
 - Python
 - Django
 - Django REST Framework
+- Django REST Framework XML
 - MariaDB
 - HTML/CSS
 
 ---
 
-## 📌 Notes
+## Notes
 
-- Ensure MariaDB is running before starting the server
-- Create and configure your `.env` file before migrations
+- Ensure MariaDB is running before starting server
+- Configure `.env` before migrations
 - Admin panel available at `/admin/`
+- Requires dependencies listed in requirements.txt

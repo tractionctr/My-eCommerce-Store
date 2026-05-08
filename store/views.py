@@ -8,18 +8,19 @@ from django.core.mail import send_mail
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import JsonResponse
 
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
-
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.response import Response
+from rest_framework_xml.renderers import XMLRenderer
 from rest_framework.decorators import (
     api_view,
     authentication_classes,
     permission_classes,
+    renderer_classes,
 )
-from rest_framework.authentication import BasicAuthentication
 
 from .forms import CustomUserCreationForm
 from .models import Product, Order, Store, Review
@@ -50,6 +51,7 @@ def vendor_required(view_func):
 @api_view(['GET'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
+@renderer_classes([XMLRenderer])
 def stores_by_vendor(request, vendor_id):
     """Return all stores owned by a specific vendor."""
     stores = Store.objects.filter(owner_id=vendor_id)
@@ -63,12 +65,13 @@ def stores_by_vendor(request, vendor_id):
         for s in stores
     ]
 
-    return JsonResponse(data, safe=False)
+    return Response(data)
 
 
 @api_view(['GET'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
+@renderer_classes([XMLRenderer])
 def products_by_store(request, store_id):
     """Return all products belonging to a specific store."""
     products = Product.objects.filter(store_id=store_id)
@@ -82,16 +85,17 @@ def products_by_store(request, store_id):
         for p in products
     ]
 
-    return JsonResponse(data, safe=False)
+    return Response(data)
 
 
 @api_view(['GET'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated])
+@renderer_classes([XMLRenderer])
 def vendor_reviews(request):
     """Return reviews for products owned by the logged-in vendor."""
     if not request.user.is_vendor:
-        return JsonResponse({"error": "Not a vendor"}, status=403)
+        return Response({"error": "Not a vendor"}, status=403)
 
     reviews = Review.objects.filter(product__store__owner=request.user)
 
@@ -105,7 +109,7 @@ def vendor_reviews(request):
         for r in reviews
     ]
 
-    return JsonResponse(data, safe=False)
+    return Response(data)
 
 
 class ProductViewSet(viewsets.ModelViewSet):
